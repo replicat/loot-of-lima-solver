@@ -19,10 +19,3 @@ class RangeInfo(Info):
     start: Direction
     end: Direction
     amount: int
-
-
-@dataclasses.dataclass
-class SingleInfo(Info):
-    terrain: Terrain
-    direction: Direction
-    exist: bool
