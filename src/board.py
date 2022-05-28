@@ -60,6 +60,10 @@ class Board:
 
     def print(self):
         if self._count <= 0:
+            if self._problem.status == pl.LpStatusNotSolved:
+                print("Not solved")
+            elif self._problem.status == pl.LpStatusInfeasible:
+                print("No solution found")
             return
 
         print("========================================")
@@ -120,6 +124,16 @@ class Board:
 if __name__ == "__main__":
     info = [
         RangeInfo(player="a", terrain=Terrain.MOUNTAIN, start=Direction.NORTH, end=Direction.SOUTH, amount=4),
+        RangeInfo(player="b", terrain=Terrain.FOREST, start=Direction.NORTH, end=Direction.SOUTH, amount=4),
+        RangeInfo(player="c", terrain=Terrain.ALL, start=Direction.NORTH, end=Direction.SOUTH, amount=4),
+        RangeInfo(player="d", terrain=Terrain.ALL, start=Direction.SOUTH, end=Direction.NORTH, amount=4),
+        RangeInfo(player="d", terrain=Terrain.FOREST, start=Direction.EAST, end=Direction.WEST, amount=2),
+        RangeInfo(player="d", terrain=Terrain.MOUNTAIN, start=Direction.EAST, end=Direction.WEST, amount=2),
+        RangeInfo(player="e", terrain=Terrain.ALL, start=Direction.SOUTH, end=Direction.NORTH, amount=4),
+        RangeInfo(player="e", terrain=Terrain.BEACH, start=Direction.SOUTH, end=Direction.SOUTH, amount=2),
+        RangeInfo(player="e", terrain=Terrain.FOREST, start=Direction.SOUTH, end=Direction.SOUTH, amount=0),
+        RangeInfo(player="public", terrain=Terrain.BEACH, start=Direction.SOUTH, end=Direction.SOUTHWEST, amount=1),
+        RangeInfo(player="public", terrain=Terrain.BEACH, start=Direction.WEST, end=Direction.NORTHWEST, amount=1),
     ]
     board = Board(info)
     board.solve()
