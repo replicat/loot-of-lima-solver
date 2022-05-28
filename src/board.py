@@ -60,6 +60,20 @@ class Board:
             print("=" * 44)
 
     def get_location(self, player: str, name: str) -> pl.LpVariable:
+        """Get a single location with the given name.
+
+        Args:
+            player (str): Player.
+            name (str): Name of the location.
+
+        Raises:
+            exceptions.PlayerNotFoundException: Raised when player not found.
+            exceptions.TerrainNotFoundException: Raised when terrain not found.
+            exceptions.DirectionNotFoundException: Raised when direction not found.
+
+        Returns:
+            pl.LpVariable: The location.
+        """
         terrain = str("".join(filter(str.isalpha, name)))
         direction = int("".join(filter(str.isdigit, name)))
 
@@ -75,6 +89,22 @@ class Board:
         return self.locations[(player, self.terrains(terrain), self.directions(direction))]
 
     def get_locations(self, player: str, terrain: str, start: int, end: int) -> list[pl.LpVariable]:
+        """Get a range of locations with the given parameters.
+
+        Args:
+            player (str): Player.
+            terrain (str): Terrain.
+            start (int): Direction at start.
+            end (int): Direction at end.
+
+        Raises:
+            exceptions.PlayerNotFoundException: Raised when player not found.
+            exceptions.TerrainNotFoundException: Raised when terrain not found.
+            exceptions.DirectionNotFoundException: Raised when direction not found.
+
+        Returns:
+            list[pl.LpVariable]: A list of locations.
+        """
         if player not in self.players:
             raise exceptions.PlayerNotFoundException()
 
