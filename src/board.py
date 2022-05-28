@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import enum
 import random
 
 import pulp as pl
 import tabulate
 
+import exceptions
 from enums import Direction, Terrain
 
 
@@ -14,22 +16,22 @@ class Board:
     def __init__(
         self,
         players: tuple,
-        terrains: tuple,
-        directions: tuple,
+        terrains: enum.Enum,
+        directions: enum.Enum,
     ):
         """Constructor of `Board` class.
 
         Args:
             players (tuple): Tuple of players.
-            terrains (tuple): Tuple of types of terrain.
-            directions (tuple): Tuple of directions.
+            terrains (enum.Enum): Enum on types of terrain.
+            directions (enum.Enum): Enum on directions.
         """
         self._players: tuple = players
-        self._terrains: tuple = terrains
-        self._directions: tuple = directions
+        self._terrains: enum.Enum = terrains
+        self._directions: enum.Enum = directions
 
         self.locations: dict[tuple, pl.LpVariable] = pl.LpVariable.dicts(
-            name="Player Locations",
+            name="Locations",
             indices=[(p, t, d) for p in self.players for t in self.terrains for d in self.directions],
             cat="Binary",
         )
@@ -41,11 +43,11 @@ class Board:
         return self._players
 
     @property
-    def terrains(self) -> tuple:
+    def terrains(self) -> enum.Enum:
         return self._terrains
 
     @property
-    def directions(self) -> tuple:
+    def directions(self) -> enum.Enum:
         return self._directions
 
     def print(self):
@@ -58,11 +60,30 @@ class Board:
             print(tabulate.tabulate(table, headers, tablefmt="simple", floatfmt=".0f", numalign="center"))
             print("=" * 44)
 
+    def get_locations(self, player: str, terrain: str, start: int, end: int) -> list[pl.LpVariable]:
+        if player not in self.players:
+            raise exceptions.PlayerNotFoundException()
+
+        if terrain not in self.terrains:
+            raise exceptions.TerrainNotFoundException()
+
+        if start not in self.directions or end not in self.directions:
+            raise exceptions.DirectionNotFoundException()
+
+        if start >= end:
+            dirs = list(range(start, len(self.directions) + 1)) + list(range(1, end))
+        else:
+            dirs = list(range(start, end))
+
+        return [self.locations[(player, self.terrains(terrain), self.directions(d))] for d in dirs]
+
 
 if __name__ == "__main__":
     board = Board(
         players=("A", "B", "C", "D", "E", "Public", "Loot"),
-        terrains=(Terrain.BEACH, Terrain.FOREST, Terrain.MOUNTAIN),
+        terrains=Terrain,
         directions=Direction,
     )
-    board.print()
+    print(board.get_locations("A", Terrain.BEACH.value, Direction.NORTH.value, Direction.NORTHEAST.value))
+
+    # board.print()

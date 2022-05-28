@@ -1,17 +1,26 @@
 import enum
 
 
-class Terrain(enum.Enum):
-    ALL = "A"
+class CustomEnumMeta(enum.EnumMeta):
+    def __str__(self):
+        return self.value
+
+    def __contains__(cls, item):
+        try:
+            cls(item)
+        except ValueError:
+            return False
+        else:
+            return True
+
+
+class Terrain(enum.Enum, metaclass=CustomEnumMeta):
     BEACH = "B"
     FOREST = "F"
     MOUNTAIN = "M"
 
-    def __str__(self):
-        return self.value
 
-
-class Direction(enum.Enum):
+class Direction(enum.Enum, metaclass=CustomEnumMeta):
     NORTH = 1
     NORTHEAST = 2
     EAST = 3
@@ -20,6 +29,3 @@ class Direction(enum.Enum):
     SOUTHWEST = 6
     WEST = 7
     NORTHWEST = 8
-
-    def __str__(self):
-        return str(self.value)
