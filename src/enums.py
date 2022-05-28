@@ -2,18 +2,24 @@ import enum
 
 
 class Terrain(enum.Enum):
-    ALL = enum.auto()
-    BEACH = enum.auto()
-    FOREST = enum.auto()
-    MOUNTAIN = enum.auto()
+    ALL = "A"
+    BEACH = "B"
+    FOREST = "F"
+    MOUNTAIN = "M"
+
+    def __str__(self):
+        return self.value
 
 
 class Direction(enum.Enum):
-    NORTH = 0
-    NORTHEAST = 1
-    EAST = 2
-    SOUTHEAST = 3
-    SOUTH = 4
-    SOUTHWEST = 5
-    WEST = 6
-    NORTHWEST = 7
+    NORTH = 1
+    NORTHEAST = 2
+    EAST = 3
+    SOUTHEAST = 4
+    SOUTH = 5
+    SOUTHWEST = 6
+    WEST = 7
+    NORTHWEST = 8
+
+    def __str__(self):
+        return str(self.value)
