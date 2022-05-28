@@ -13,6 +13,10 @@ def test_board_init():
     "player, terrain, start, end, expected",
     [
         ("a", Terrain.MOUNTAIN, Direction.NORTH, Direction.SOUTH, 4),
+        ("b", Terrain.ALL, Direction.NORTH, Direction.SOUTH, 12),
+        ("c", Terrain.FOREST, Direction.SOUTH, Direction.SOUTHWEST, 1),
+        ("d", Terrain.FOREST, Direction.SOUTHWEST, Direction.SOUTH, 7),
+        ("e", Terrain.ALL, Direction.NORTH, Direction.NORTH, 24),
     ],
 )
 def test_board_get_slots(player, terrain, start, end, expected):

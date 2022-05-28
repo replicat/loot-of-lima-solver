@@ -35,8 +35,28 @@ class Board:
         self._count = 0
 
     def _get_slots(self, player: str, terrain: Terrain, start: Direction, end: Direction) -> list[pl.LpVariable]:
+        if terrain == Terrain.ALL:
+            return [
+                slot
+                for terrain in (Terrain.BEACH, Terrain.FOREST, Terrain.MOUNTAIN)
+                for slot in self._get_slots(player, terrain, start, end)
+            ]
 
-        return self._slots.values()
+        # separate slots by terrain
+        terrain_slots = {
+            Terrain.BEACH: [self._slots[(player, slot)] for slot in range(0, 8)],
+            Terrain.FOREST: [self._slots[(player, slot)] for slot in range(8, 16)],
+            Terrain.MOUNTAIN: [self._slots[(player, slot)] for slot in range(16, 24)],
+        }
+
+        # translate direction to position
+        start_pos = start.value
+        end_pos = end.value
+
+        if end_pos <= start_pos:
+            return terrain_slots[terrain][start_pos:8] + terrain_slots[terrain][0:end_pos]
+        else:
+            return terrain_slots[terrain][start_pos:end_pos]
 
     def print(self):
         if self._count <= 0:
