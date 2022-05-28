@@ -24,7 +24,7 @@ class Board:
 
         # init aggregate
         self._aggregated: dict[tuple, float] = {}
-        self._count = 0
+        self._count: int = 0
         self._init_aggregate()
 
     def _init_aggregate(self):
@@ -35,15 +35,15 @@ class Board:
         if self._count <= 0:
             return
 
-        print("================================")
+        print("========================================")
         for player in self.players:
             print(player)
-            print("--------------------------------")
+            print("----------------------------------------")
             for slot in range(self.max_slot):
-                print(self._aggregated[(player, slot)] / self._count, end=" ")
+                print(f"{self._aggregated[(player, slot)] / self._count:.2f}", end=" ")
                 if slot in (7, 15, 23):
                     print()
-            print("================================")
+            print("========================================")
         print(f"Total Iterations: {self._count}")
 
     def solve(self, max_iterations: int = 100):
