@@ -59,6 +59,21 @@ class Board:
             print(tabulate.tabulate(table, headers, tablefmt="simple", floatfmt=".0f", numalign="center"))
             print("=" * 44)
 
+    def get_location(self, player: str, name: str) -> pl.LpVariable:
+        terrain = str("".join(filter(str.isalpha, name)))
+        direction = int("".join(filter(str.isdigit, name)))
+
+        if player not in self.players:
+            raise exceptions.PlayerNotFoundException()
+
+        if terrain not in self.terrains:
+            raise exceptions.TerrainNotFoundException()
+
+        if direction not in self.directions:
+            raise exceptions.DirectionNotFoundException()
+
+        return self.locations[(player, self.terrains(terrain), self.directions(direction))]
+
     def get_locations(self, player: str, terrain: str, start: int, end: int) -> list[pl.LpVariable]:
         if player not in self.players:
             raise exceptions.PlayerNotFoundException()
