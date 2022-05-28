@@ -2,9 +2,6 @@ import enum
 
 
 class CustomEnumMeta(enum.EnumMeta):
-    def __str__(self):
-        return self.value
-
     def __contains__(cls, item):
         try:
             cls(item)
@@ -14,13 +11,18 @@ class CustomEnumMeta(enum.EnumMeta):
             return True
 
 
-class StandardTerrain(enum.Enum, metaclass=CustomEnumMeta):
+class CustomEnum(enum.Enum, metaclass=CustomEnumMeta):
+    def __str__(self):
+        return str(self.value)
+
+
+class StandardTerrain(CustomEnum):
     BEACH = "B"
     FOREST = "F"
     MOUNTAIN = "M"
 
 
-class StandardDirection(enum.Enum, metaclass=CustomEnumMeta):
+class StandardDirection(CustomEnum):
     NORTH = 1
     NORTHEAST = 2
     EAST = 3
