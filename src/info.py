@@ -3,7 +3,8 @@ import dataclasses
 from .enums import Direction, Terrain
 
 
-class Info(dataclasses.dataclass):
+@dataclasses.dataclass
+class Info:
     player: str
 
 
