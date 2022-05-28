@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pulp as pl
 
-from .enums import Direction, Terrain
-from .info import Info, RangeInfo
+from enums import Direction, Terrain
+from info import Info, RangeInfo
 
 # Currently only available for 5-players game
 
@@ -91,7 +91,9 @@ class Board:
         # constraints from info
         for info in self._info:
             if isinstance(info, RangeInfo):
-                self._problem.addConstraint(pl.lpSum(self._get_slots()) == info.amount)
+                self._problem.addConstraint(
+                    pl.lpSum(self._get_slots(info.player, info.terrain, info.start, info.end)) == info.amount
+                )
 
         for _ in range(max_iterations):
             # solve once

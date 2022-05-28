@@ -1,6 +1,6 @@
 import dataclasses
 
-from .enums import Direction, Terrain
+from enums import Direction, Terrain
 
 
 @dataclasses.dataclass
@@ -8,10 +8,12 @@ class Info:
     player: str
 
 
+@dataclasses.dataclass
 class LeastTerrainInfo(Info):
     terrain: Terrain
 
 
+@dataclasses.dataclass
 class RangeInfo(Info):
     terrain: Terrain
     start: Direction
@@ -19,6 +21,7 @@ class RangeInfo(Info):
     amount: int
 
 
+@dataclasses.dataclass
 class SingleInfo(Info):
     terrain: Terrain
     direction: Direction
