@@ -11,9 +11,9 @@ class LootOfLimaBoard:
         self._info: list = info or []
 
         self._problem = pl.LpProblem(sense=pl.LpMaximize)
-        self._slots: dict = pl.LpVariable.dicts(
+        self._slots: dict[tuple, pl.LpVariable] = pl.LpVariable.dicts(
             name="Slots",
-            indices=(self.players, range(self.max_slot)),
+            indices=[(p, s) for p in self.players for s in range(self.max_slot)],
             cat="Binary",
         )
 
@@ -26,7 +26,7 @@ class LootOfLimaBoard:
             print(player)
             print("--------------------------------")
             for slot in range(self.max_slot):
-                print(int(pl.value(self._slots[player][slot])), end=" ")
+                print(int(pl.value(self._slots[(player, slot)])), end=" ")
                 if slot in (7, 15, 23):
                     print()
             print("================================")
@@ -35,17 +35,17 @@ class LootOfLimaBoard:
     def solve(self):
         # all slots must present once and only once
         for slot in range(self.max_slot):
-            self._problem.addConstraint(pl.lpSum(self._slots[player][slot] for player in self.players) == 1)
+            self._problem.addConstraint(pl.lpSum(self._slots[(player, slot)] for player in self.players) == 1)
 
         # each real player have a total of 4 slots
         for player in ("a", "b", "c", "d", "e"):
-            self._problem.addConstraint(pl.lpSum(self._slots[player][slot] for slot in range(self.max_slot)) == 4)
+            self._problem.addConstraint(pl.lpSum(self._slots[(player, slot)] for slot in range(self.max_slot)) == 4)
 
         # public & loot each have a total of 2 slots
         for player in ("public", "loot"):
-            self._problem.addConstraint(pl.lpSum(self._slots[player][slot] for slot in range(self.max_slot)) == 2)
+            self._problem.addConstraint(pl.lpSum(self._slots[(player, slot)] for slot in range(self.max_slot)) == 2)
 
-        self._problem.solve()
+        self._problem.solve(pl.PULP_CBC_CMD())
 
 
 if __name__ == "__main__":
