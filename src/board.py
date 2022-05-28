@@ -3,7 +3,7 @@ from __future__ import annotations
 import pulp as pl
 
 
-class LootOfLimaBoard:
+class Board:
     def __init__(self, info: list | None = None):
         # preset variables
         self.players: tuple = ("a", "b", "c", "d", "e", "public", "loot")
@@ -82,6 +82,6 @@ class LootOfLimaBoard:
 
 
 if __name__ == "__main__":
-    board = LootOfLimaBoard()
+    board = Board()
     board.solve()
     board.print()
