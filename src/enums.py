@@ -14,13 +14,13 @@ class CustomEnumMeta(enum.EnumMeta):
             return True
 
 
-class Terrain(enum.Enum, metaclass=CustomEnumMeta):
+class StandardTerrain(enum.Enum, metaclass=CustomEnumMeta):
     BEACH = "B"
     FOREST = "F"
     MOUNTAIN = "M"
 
 
-class Direction(enum.Enum, metaclass=CustomEnumMeta):
+class StandardDirection(enum.Enum, metaclass=CustomEnumMeta):
     NORTH = 1
     NORTHEAST = 2
     EAST = 3

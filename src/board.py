@@ -6,8 +6,7 @@ import random
 import pulp as pl
 import tabulate
 
-import exceptions
-from enums import Direction, Terrain
+from . import exceptions
 
 
 class Board:
@@ -76,14 +75,3 @@ class Board:
             dirs = list(range(start, end))
 
         return [self.locations[(player, self.terrains(terrain), self.directions(d))] for d in dirs]
-
-
-if __name__ == "__main__":
-    board = Board(
-        players=("A", "B", "C", "D", "E", "Public", "Loot"),
-        terrains=Terrain,
-        directions=Direction,
-    )
-    print(board.get_locations("A", Terrain.BEACH.value, Direction.NORTH.value, Direction.NORTHEAST.value))
-
-    # board.print()
