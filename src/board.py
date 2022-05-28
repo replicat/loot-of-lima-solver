@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pulp as pl
 
+# Currently only available for 5-players game
+
 
 class Board:
     def __init__(self, info: list | None = None):
