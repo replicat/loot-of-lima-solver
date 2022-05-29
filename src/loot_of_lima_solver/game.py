@@ -41,6 +41,37 @@ class Game:
         }
         self._iteration_count = 0
 
+    def _info_to_constraint(self, info):
+        if isinstance(info, information.UniqueLocationInfo):
+            for t in self._board.terrains:
+                for d in self._board.directions:
+                    self._problem.addConstraint(
+                        pl.lpSum(self._board.locations[(p, t, d)] for p in self._board.players) == 1
+                    )
+        elif isinstance(info, information.SingleInfo):
+            self._problem.addConstraint(pl.lpSum(self._board.get_location(info.player, info.name)) == int(info.present))
+        elif isinstance(info, information.RangeInfo):
+            if info.terrain == "A":
+                locs = [
+                    loc
+                    for sublist in [
+                        self._board.get_locations(info.player, t, info.start, info.end) for t in self._board.terrains
+                    ]
+                    for loc in sublist
+                ]
+            else:
+                locs = self._board.get_locations(info.player, info.terrain, info.start, info.end)
+            self._problem.addConstraint(pl.lpSum(locs) == info.amount)
+        elif isinstance(info, information.LeastTerrainInfo):
+            for t in self._board.terrains:
+                if t.value != info.terrain:
+                    self._problem.addConstraint(
+                        pl.lpSum(self._board.get_locations(info.player, info.terrain, 1, 1))
+                        <= pl.lpSum(self._board.get_locations(info.player, t.value, 1, 1))
+                    )
+        else:
+            raise ValueError(f"Unknown information type: {type(info)}")
+
     @property
     def info(self) -> list[information.Info]:
         return self._rules + self._info
@@ -68,40 +99,10 @@ class Game:
 
     def solve(self, max_iterations: int = 100):
         self._init_solver()
-        # constraints from information
+
+        # add constraints from information
         for info in self.info:
-            if isinstance(info, information.UniqueLocationInfo):
-                for t in self._board.terrains:
-                    for d in self._board.directions:
-                        self._problem.addConstraint(
-                            pl.lpSum(self._board.locations[(p, t, d)] for p in self._board.players) == 1
-                        )
-            elif isinstance(info, information.SingleInfo):
-                self._problem.addConstraint(
-                    pl.lpSum(self._board.get_location(info.player, info.name)) == int(info.present)
-                )
-            elif isinstance(info, information.RangeInfo):
-                if info.terrain == "A":
-                    locs = [
-                        loc
-                        for sublist in [
-                            self._board.get_locations(info.player, t, info.start, info.end)
-                            for t in self._board.terrains
-                        ]
-                        for loc in sublist
-                    ]
-                else:
-                    locs = self._board.get_locations(info.player, info.terrain, info.start, info.end)
-                self._problem.addConstraint(pl.lpSum(locs) == info.amount)
-            elif isinstance(info, information.LeastTerrainInfo):
-                for t in self._board.terrains:
-                    if t.value != info.terrain:
-                        self._problem.addConstraint(
-                            pl.lpSum(self._board.get_locations(info.player, info.terrain, 1, 1))
-                            <= pl.lpSum(self._board.get_locations(info.player, t.value, 1, 1))
-                        )
-            else:
-                raise ValueError(f"Unknown information type: {type(info)}")
+            self._info_to_constraint(info)
 
         # solve until infeasible/max iterations reached
         for _ in range(max_iterations):
