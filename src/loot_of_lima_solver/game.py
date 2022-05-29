@@ -14,6 +14,7 @@ class StandardGame:
     TERRAINS = enums.StandardTerrain
     DIRECTIONS = enums.StandardDirection
     GAME_RULES = [
+        information.UniqueLocationInfo(),
         information.RangeInfo(player="A", terrain="A", start=1, end=1, amount=4),
         information.RangeInfo(player="B", terrain="A", start=1, end=1, amount=4),
         information.RangeInfo(player="C", terrain="A", start=1, end=1, amount=4),
@@ -71,17 +72,15 @@ class StandardGame:
 
     def solve(self, max_iterations: int = 100):
         self._init_solver()
-
-        # constraint: all locations are unique
-        for t in self._board.terrains:
-            for d in self._board.directions:
-                self._problem.addConstraint(
-                    pl.lpSum(self._board.locations[(p, t, d)] for p in self._board.players) == 1
-                )
-
-        # constraint: from information
+        # constraints from information
         for info in self._info:
-            if isinstance(info, information.SingleInfo):
+            if isinstance(info, information.UniqueLocationInfo):
+                for t in self._board.terrains:
+                    for d in self._board.directions:
+                        self._problem.addConstraint(
+                            pl.lpSum(self._board.locations[(p, t, d)] for p in self._board.players) == 1
+                        )
+            elif isinstance(info, information.SingleInfo):
                 self._problem.addConstraint(
                     pl.lpSum(self._board.get_location(info.player, info.name)) == int(info.present)
                 )
@@ -122,7 +121,7 @@ class StandardGame:
                         self._aggregated[(p, t, d)] += pl.value(self._board.locations[(p, t, d)])
             self._iteration_count += 1
 
-            # constraint: prevent same solution
+            # add constraint to prevent same solution
             solution = [
                 self._board.locations[(p, t, d)]
                 for p in self._board.players

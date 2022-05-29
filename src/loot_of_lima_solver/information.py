@@ -3,17 +3,24 @@ import dataclasses
 
 @dataclasses.dataclass
 class Info:
-    player: str
+    pass
+
+
+@dataclasses.dataclass
+class UniqueLocationInfo(Info):
+    pass
 
 
 @dataclasses.dataclass
 class SingleInfo(Info):
+    player: str
     name: str
     present: bool
 
 
 @dataclasses.dataclass
 class RangeInfo(Info):
+    player: str
     terrain: str
     start: int
     end: int
@@ -22,4 +29,5 @@ class RangeInfo(Info):
 
 @dataclasses.dataclass
 class LeastTerrainInfo(Info):
+    player: str
     terrain: str
