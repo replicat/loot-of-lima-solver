@@ -1,39 +1,31 @@
 from __future__ import annotations
 
+import enum
+
 import pulp as pl
 import tabulate
 
 from . import board, enums, information
 
 
-# Currently hardcoded for 5-players standard game
-class StandardGame:
+class Game:
     """Representation of the game state."""
-
-    PLAYERS = ("A", "B", "C", "D", "E", "Public", "Loot")
-    TERRAINS = enums.StandardTerrain
-    DIRECTIONS = enums.StandardDirection
-    GAME_RULES = [
-        information.UniqueLocationInfo(),
-        information.RangeInfo(player="A", terrain="A", start=1, end=1, amount=4),
-        information.RangeInfo(player="B", terrain="A", start=1, end=1, amount=4),
-        information.RangeInfo(player="C", terrain="A", start=1, end=1, amount=4),
-        information.RangeInfo(player="D", terrain="A", start=1, end=1, amount=4),
-        information.RangeInfo(player="E", terrain="A", start=1, end=1, amount=4),
-        information.RangeInfo(player="Public", terrain="A", start=1, end=1, amount=2),
-        information.RangeInfo(player="Loot", terrain="A", start=1, end=1, amount=2),
-    ]
 
     def __init__(
         self,
+        players: tuple,
+        terrains: enum.Enum,
+        directions: enum.Enum,
+        rules: list[information.Info],
         info: list[information.Info] | None = None,
     ):
-        self._info: list[information.Info] = self.GAME_RULES + (info or [])
+        self._rules: list[information.Info] = rules
+        self._info: list[information.Info] = info or []
 
         self._board = board.Board(
-            players=self.PLAYERS,
-            terrains=self.TERRAINS,
-            directions=self.DIRECTIONS,
+            players=players,
+            terrains=terrains,
+            directions=directions,
         )
 
         self._problem: pl.LpProblem
@@ -48,6 +40,10 @@ class StandardGame:
             (p, t, d): 0.0 for p in self._board.players for t in self._board.terrains for d in self._board.directions
         }
         self._iteration_count = 0
+
+    @property
+    def info(self) -> list[information.Info]:
+        return self._rules + self._info
 
     def print(self, binary=False):
         if self._iteration_count <= 0:
@@ -73,7 +69,7 @@ class StandardGame:
     def solve(self, max_iterations: int = 100):
         self._init_solver()
         # constraints from information
-        for info in self._info:
+        for info in self.info:
             if isinstance(info, information.UniqueLocationInfo):
                 for t in self._board.terrains:
                     for d in self._board.directions:
@@ -135,3 +131,30 @@ class StandardGame:
 
     def get_result(self) -> dict:
         return self._aggregated
+
+
+class StandardGame(Game):
+    """Representation of a standard game with official rules."""
+
+    # Currently hardcoded for 5-players game
+
+    def __init__(
+        self,
+        info: list[information.Info] | None = None,
+    ):
+        super().__init__(
+            players=("A", "B", "C", "D", "E", "Public", "Loot"),
+            terrains=enums.StandardTerrain,
+            directions=enums.StandardDirection,
+            rules=[
+                information.UniqueLocationInfo(),
+                information.RangeInfo(player="A", terrain="A", start=1, end=1, amount=4),
+                information.RangeInfo(player="B", terrain="A", start=1, end=1, amount=4),
+                information.RangeInfo(player="C", terrain="A", start=1, end=1, amount=4),
+                information.RangeInfo(player="D", terrain="A", start=1, end=1, amount=4),
+                information.RangeInfo(player="E", terrain="A", start=1, end=1, amount=4),
+                information.RangeInfo(player="Public", terrain="A", start=1, end=1, amount=2),
+                information.RangeInfo(player="Loot", terrain="A", start=1, end=1, amount=2),
+            ],
+            info=info,
+        )
