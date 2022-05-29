@@ -1,8 +1,8 @@
 import pytest
 
-from src.enums import StandardDirection, StandardTerrain
-from src.game import StandardGame
-from src.information import LeastTerrainInfo, RangeInfo, SingleInfo
+from loot_of_lima_solver.enums import StandardDirection, StandardTerrain
+from loot_of_lima_solver.game import StandardGame
+from loot_of_lima_solver.information import LeastTerrainInfo, RangeInfo, SingleInfo
 
 
 @pytest.fixture(scope="function")

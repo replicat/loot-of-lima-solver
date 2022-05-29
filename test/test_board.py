@@ -1,7 +1,7 @@
 import pytest
 
-from src.board import Board
-from src.enums import StandardDirection, StandardTerrain
+from loot_of_lima_solver.board import Board
+from loot_of_lima_solver.enums import StandardDirection, StandardTerrain
 
 
 @pytest.fixture(scope="function")

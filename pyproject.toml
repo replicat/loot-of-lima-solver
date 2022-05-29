@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "loot-of-lima-solver"
 version = "0.1.0"
-description = ""
+description = "A solver for the board game 'Loot of Lima'."
 authors = ["Lucas Lee <replicat@users.noreply.github.com>"]
+readme = "README.md"
+repository = "https://github.com/replicat/loot-of-lima-solver"
 
 [tool.poetry.dependencies]
 python = "^3.9"
